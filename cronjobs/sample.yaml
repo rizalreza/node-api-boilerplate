@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: boilerplate-sample
+  namespace: express-boilerplate-service
+spec:
+  schedule: '* * * * *'
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - envFrom:
+            - secretRef:
+                name: express-boilerplate-service-cold-app-secret
+            - secretRef:
+                name: express-boilerplate-service-hot-app-secret
+            name: express-boilerplate-service
+            image: %{IMAGE_URL}:%{TAG}
+            imagePullPolicy: Always
+            command: ["node","subscribers/SampleSubscriber.js"]
+          restartPolicy: Never
